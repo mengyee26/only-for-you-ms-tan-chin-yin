@@ -1,110 +1,302 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Passcode</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Passcode</title>
 
-<style>
-body {
-  margin: 0;
-  background: linear-gradient(#dcdcdc, #bfbfbf);
-  font-family: sans-serif;
-  text-align: center;
-  color: white;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-.screen {
-  margin-top: 60px;
-}
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      overflow-x: hidden;
+      font-family: "Trebuchet MS", sans-serif;
+    }
 
-.title {
-  font-size: 20px;
-  margin-bottom: 20px;
-}
+    body {
+      background: #d9d9d9;
+      color: white;
+      text-align: center;
+    }
 
-.dots {
-  margin: 20px;
-}
+    .screen {
+      width: 100%;
+      max-width: 430px;
+      margin: 0 auto;
+      padding-top: 70px;
+      padding-bottom: 40px;
+    }
 
-.dot {
-  width: 14px;
-  height: 14px;
-  border: 2px solid white;
-  border-radius: 50%;
-  display: inline-block;
-  margin: 6px;
-}
+    .title {
+      font-size: 20px;
+      color: rgba(255,255,255,0.96);
+      margin-bottom: 22px;
+    }
 
-.filled {
-  background: white;
-}
+    .dots {
+      margin-bottom: 34px;
+    }
 
-.keypad {
-  display: grid;
-  grid-template-columns: repeat(3, 90px);
-  gap: 18px;
-  justify-content: center;
-  margin-top: 30px;
-}
+    .dot {
+      width: 15px;
+      height: 15px;
+      border: 2px solid rgba(255,255,255,0.95);
+      border-radius: 50%;
+      display: inline-block;
+      margin: 0 7px;
+    }
 
-.key {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.25);
-  border: none;
-  color: white;
-  cursor: pointer;
-}
+    .dot.filled {
+      background: rgba(255,255,255,0.95);
+    }
 
-.key:active {
-  transform: scale(0.9);
-}
+    .keypad {
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px 18px;
+      justify-items: center;
+    }
 
-.num {
-  font-size: 26px;
-}
+    .key {
+      width: 88px;
+      height: 88px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.24);
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
 
-.letters {
-  font-size: 12px;
-}
+    .key:active {
+      transform: scale(0.96);
+    }
 
-.bottom-row {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  margin-top: 25px;
-}
+    .num {
+      font-size: 28px;
+      line-height: 1.1;
+      margin-top: 10px;
+      font-weight: 500;
+    }
 
-.text-btn {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 16px;
-}
+    .letters {
+      font-size: 13px;
+      line-height: 1.1;
+      letter-spacing: 1px;
+      margin-top: 4px;
+      opacity: 0.95;
+    }
 
-.message {
-  margin-top: 20px;
-  color: #ffb3b3;
-}
+    .bottom-row {
+      width: 100%;
+      max-width: 320px;
+      margin: 18px auto 0;
+      display: grid;
+      grid-template-columns: 1fr 88px 1fr;
+      align-items: center;
+    }
 
-.shake {
-  animation: shake 0.3s;
-}
+    .text-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.96);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 0 6px;
+    }
 
-@keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-8px); }
-  50% { transform: translateX(8px); }
-  75% { transform: translateX(-8px); }
-  100% { transform: translateX(0); }
-}
-</style>
+    .text-btn.left {
+      text-align: left;
+    }
+
+    .text-btn.right {
+      text-align: right;
+    }
+
+    .message {
+      min-height: 24px;
+      margin-top: 24px;
+      font-size: 16px;
+      color: #f3b8c2;
+    }
+
+    .shake {
+      animation: shake 0.3s;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      50% { transform: translateX(8px); }
+      75% { transform: translateX(-8px); }
+      100% { transform: translateX(0); }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="screen" id="screen">
+    <div class="title">Touch ID or Enter Passcode</div>
 
-<div class="screen" id="screen">
+    <div class="dots">
+      <span class="dot" id="dot1"></span>
+      <span class="dot" id="dot2"></span>
+      <span class="dot" id="dot3"></span>
+      <span class="dot" id="dot4"></span>
+    </div>
+
+    <div class="keypad">
+      <button class="key" onclick="pressKey('1')">
+        <div class="num">1</div>
+        <div class="letters">&nbsp;</div>
+      </button>
+
+      <button class="key" onclick="pressKey('2')">
+        <div class="num">2</div>
+        <div class="letters">ABC</div>
+      </button>
+
+      <button class="key" onclick="pressKey('3')">
+        <div class="num">3</div>
+        <div class="letters">DEF</div>
+      </button>
+
+      <button class="key" onclick="pressKey('4')">
+        <div class="num">4</div>
+        <div class="letters">GHI</div>
+      </button>
+
+      <button class="key" onclick="pressKey('5')">
+        <div class="num">5</div>
+        <div class="letters">JKL</div>
+      </button>
+
+      <button class="key" onclick="pressKey('6')">
+        <div class="num">6</div>
+        <div class="letters">MNO</div>
+      </button>
+
+      <button class="key" onclick="pressKey('7')">
+        <div class="num">7</div>
+        <div class="letters">PQRS</div>
+      </button>
+
+      <button class="key" onclick="pressKey('8')">
+        <div class="num">8</div>
+        <div class="letters">TUV</div>
+      </button>
+
+      <button class="key" onclick="pressKey('9')">
+        <div class="num">9</div>
+        <div class="letters">WXYZ</div>
+      </button>
+    </div>
+
+    <div class="bottom-row">
+      <button class="text-btn left" onclick="clearCode()">Emergency</button>
+
+      <button class="key" onclick="pressKey('0')">
+        <div class="num">0</div>
+        <div class="letters">&nbsp;</div>
+      </button>
+
+      <button class="text-btn right" onclick="deleteLast()">Cancel</button>
+    </div>
+
+    <div class="message" id="message"></div>
+  </div>
+
+  <audio id="clickSound" src="typing on phone sound effect.mp3"></audio>
+  <audio id="unlockSound" src="unlock.mp3"></audio>
+
+  <script>
+    const correctPassword = "1229";
+    let input = "";
+
+    function playClick() {
+      const s = document.getElementById("clickSound");
+      s.currentTime = 0;
+      s.play().catch(() => {});
+    }
+
+    function playUnlock() {
+      const s = document.getElementById("unlockSound");
+      s.currentTime = 0;
+      s.play().catch(() => {});
+    }
+
+    function updateDots() {
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById("dot" + i).classList.remove("filled");
+      }
+
+      for (let i = 0; i < input.length; i++) {
+        document.getElementById("dot" + (i + 1)).classList.add("filled");
+      }
+    }
+
+    function pressKey(num) {
+      playClick();
+
+      if (input.length >= 4) return;
+
+      input += num;
+      updateDots();
+      document.getElementById("message").textContent = "";
+
+      if (input.length === 4) {
+        setTimeout(checkPassword, 150);
+      }
+    }
+
+    function clearCode() {
+      input = "";
+      updateDots();
+      document.getElementById("message").textContent = "";
+    }
+
+    function deleteLast() {
+      if (input.length > 0) {
+        input = input.slice(0, -1);
+        updateDots();
+      }
+      document.getElementById("message").textContent = "";
+    }
+
+    function checkPassword() {
+      const screen = document.getElementById("screen");
+      const message = document.getElementById("message");
+
+      if (input === correctPassword) {
+        playUnlock();
+        message.textContent = "Access granted";
+
+        setTimeout(() => {
+          window.location.href = "home.html";
+        }, 500);
+      } else {
+        message.textContent = "Wrong passcode";
+        screen.classList.add("shake");
+
+        setTimeout(() => {
+          screen.classList.remove("shake");
+        }, 300);
+
+        input = "";
+        updateDots();
+      }
+    }
+  </script>
+</body>
+</html><div class="screen" id="screen">
   <div class="title">Touch ID or Enter Passcode</div>
 
   <div class="dots">
