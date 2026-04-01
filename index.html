@@ -219,29 +219,22 @@
 
   <script>
     <script>
+<script>
 const correctPassword = "1229";
 let input = "";
 
 function playClick() {
-  const sound = document.getElementById("clickSound");
-  if (!sound) return;
-  sound.currentTime = 0;
-  sound.play().then(() => {
-    console.log("click sound played");
-  }).catch((err) => {
-    console.log("click sound failed:", err);
-  });
+  const s = document.getElementById("clickSound");
+  if (!s) return;
+  s.currentTime = 0;
+  s.play().catch(() => {});
 }
 
 function playUnlock() {
-  const sound = document.getElementById("unlockSound");
-  if (!sound) return;
-  sound.currentTime = 0;
-  sound.play().then(() => {
-    console.log("unlock sound played");
-  }).catch((err) => {
-    console.log("unlock sound failed:", err);
-  });
+  const s = document.getElementById("unlockSound");
+  if (!s) return;
+  s.currentTime = 0;
+  s.play().catch(() => {});
 }
 
 function updateDots() {
@@ -260,7 +253,6 @@ function pressKey(num) {
 
   input += num;
   updateDots();
-  document.getElementById("message").textContent = "";
 
   if (input.length === 4) {
     setTimeout(checkPassword, 150);
@@ -270,19 +262,14 @@ function pressKey(num) {
 function clearCode() {
   input = "";
   updateDots();
-  document.getElementById("message").textContent = "";
 }
 
 function deleteLast() {
-  if (input.length > 0) {
-    input = input.slice(0, -1);
-    updateDots();
-  }
-  document.getElementById("message").textContent = "";
+  input = input.slice(0, -1);
+  updateDots();
 }
 
 function checkPassword() {
-  const screen = document.getElementById("screen");
   const message = document.getElementById("message");
 
   if (input === correctPassword) {
@@ -291,17 +278,12 @@ function checkPassword() {
 
     setTimeout(() => {
       window.location.href = "home.html";
-    }, 700);
+    }, 600);
+
   } else {
     message.textContent = "Wrong passcode";
-    screen.classList.add("shake");
-
-    setTimeout(() => {
-      screen.classList.remove("shake");
-    }, 300);
-
     input = "";
     updateDots();
   }
 }
-  </script>
+       </script>
