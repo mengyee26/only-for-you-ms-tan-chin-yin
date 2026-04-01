@@ -214,85 +214,94 @@
     <div class="message" id="message"></div>
   </div>
 
-  <audio id="clickSound" src="typing on phone sound effect.mp3"></audio>
-  <audio id="unlockSound" src="unlock.mp3"></audio>
+  <audio id="clickSound" src="./typing on phone sound effect.mp3"></audio>
+<audio id="unlockSound" src="./unlock.mp3"></audio>
 
   <script>
-    const correctPassword = "1229";
-    let input = "";
+    <script>
+const correctPassword = "1229";
+let input = "";
 
-    function playClick() {
-      const s = document.getElementById("clickSound");
-      s.currentTime = 0;
-      s.play().catch(() => {});
-    }
+function playClick() {
+  const sound = document.getElementById("clickSound");
+  if (!sound) return;
+  sound.currentTime = 0;
+  sound.play().then(() => {
+    console.log("click sound played");
+  }).catch((err) => {
+    console.log("click sound failed:", err);
+  });
+}
 
-    function playUnlock() {
-      const s = document.getElementById("unlockSound");
-      s.currentTime = 0;
-      s.play().catch(() => {});
-    }
+function playUnlock() {
+  const sound = document.getElementById("unlockSound");
+  if (!sound) return;
+  sound.currentTime = 0;
+  sound.play().then(() => {
+    console.log("unlock sound played");
+  }).catch((err) => {
+    console.log("unlock sound failed:", err);
+  });
+}
 
-    function updateDots() {
-      for (let i = 1; i <= 4; i++) {
-        document.getElementById("dot" + i).classList.remove("filled");
-      }
+function updateDots() {
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById("dot" + i).classList.remove("filled");
+  }
+  for (let i = 0; i < input.length; i++) {
+    document.getElementById("dot" + (i + 1)).classList.add("filled");
+  }
+}
 
-      for (let i = 0; i < input.length; i++) {
-        document.getElementById("dot" + (i + 1)).classList.add("filled");
-      }
-    }
+function pressKey(num) {
+  playClick();
 
-    function pressKey(num) {
-      playClick();
+  if (input.length >= 4) return;
 
-      if (input.length >= 4) return;
+  input += num;
+  updateDots();
+  document.getElementById("message").textContent = "";
 
-      input += num;
-      updateDots();
-      document.getElementById("message").textContent = "";
+  if (input.length === 4) {
+    setTimeout(checkPassword, 150);
+  }
+}
 
-      if (input.length === 4) {
-        setTimeout(checkPassword, 150);
-      }
-    }
+function clearCode() {
+  input = "";
+  updateDots();
+  document.getElementById("message").textContent = "";
+}
 
-    function clearCode() {
-      input = "";
-      updateDots();
-      document.getElementById("message").textContent = "";
-    }
+function deleteLast() {
+  if (input.length > 0) {
+    input = input.slice(0, -1);
+    updateDots();
+  }
+  document.getElementById("message").textContent = "";
+}
 
-    function deleteLast() {
-      if (input.length > 0) {
-        input = input.slice(0, -1);
-        updateDots();
-      }
-      document.getElementById("message").textContent = "";
-    }
+function checkPassword() {
+  const screen = document.getElementById("screen");
+  const message = document.getElementById("message");
 
-    function checkPassword() {
-      const screen = document.getElementById("screen");
-      const message = document.getElementById("message");
+  if (input === correctPassword) {
+    playUnlock();
+    message.textContent = "Access granted";
 
-      if (input === correctPassword) {
-        playUnlock();
-        message.textContent = "Access granted";
+    setTimeout(() => {
+      window.location.href = "home.html";
+    }, 700);
+  } else {
+    message.textContent = "Wrong passcode";
+    screen.classList.add("shake");
 
-        setTimeout(() => {
-          window.location.href = "home.html";
-        }, 500);
-      } else {
-        message.textContent = "Wrong passcode";
-        screen.classList.add("shake");
+    setTimeout(() => {
+      screen.classList.remove("shake");
+    }, 300);
 
-        setTimeout(() => {
-          screen.classList.remove("shake");
-        }, 300);
-
-        input = "";
-        updateDots();
-      }
-    }
+    input = "";
+    updateDots();
+  }
+}
   </script>
-</body>
