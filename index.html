@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Only For You ❤️</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial;
+      margin-top: 100px;
+    }
+    #content {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>Enter Password 🔒</h2>
+<input type="password" id="password">
+<button onclick="checkPassword()">Enter</button>
+
+<div id="content">
+  <h1>ONLY FOR YOU, MS TAN CHIN YIN 🎁</h1>
+  <p>这些是属于我们的回忆 ❤️</p>
+</div>
+
+<script>
+function checkPassword() {
+  var password = document.getElementById("password").value;
+
+  if(password === "1229") {
+    document.getElementById("content").style.display = "block";
+  } else {
+    alert("Wrong password ❌");
+  }
+}
+</script>
+
+</body>
+</html>
