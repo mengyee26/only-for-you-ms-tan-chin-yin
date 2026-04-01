@@ -30,7 +30,7 @@ function checkPassword() {
   var password = document.getElementById("password").value;
 
   if(password === "1229") {
-    document.getElementById("content").style.display = "block";
+    window.location.href = "home.html"; // 👉 跳去新页面
   } else {
     alert("Wrong password ❌");
   }
