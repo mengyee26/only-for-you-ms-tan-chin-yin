@@ -1,41 +1,103 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Only For You ❤️</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enter Passcode</title>
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
     body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to bottom, #d9d9d9, #bfbfbf);
+      overflow: hidden;
+    }
+
+    .background-blur {
+      position: absolute;
+      inset: 0;
+      background: url('https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+      filter: blur(10px) brightness(0.65);
+      transform: scale(1.08);
+      z-index: 0;
+    }
+
+    .lock-screen {
+      position: relative;
+      z-index: 1;
       text-align: center;
-      font-family: Arial;
-      margin-top: 100px;
+      color: white;
+      width: 100%;
+      max-width: 360px;
+      padding: 20px;
     }
-    #content {
-      display: none;
+
+    .title {
+      font-size: 30px;
+      font-weight: 500;
+      margin-bottom: 24px;
     }
-  </style>
-</head>
 
-<body>
+    .dots {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 34px;
+      min-height: 18px;
+    }
 
-<h2>Enter Password 🔒</h2>
-<input type="password" id="password">
-<button onclick="checkPassword()">Enter</button>
+    .dot {
+      width: 16px;
+      height: 16px;
+      border: 2px solid white;
+      border-radius: 50%;
+      background: transparent;
+      transition: 0.2s;
+    }
 
-<div id="content">
-  <h1>ONLY FOR YOU, MS TAN CHIN YIN 🎁</h1>
-  <p>这些是属于我们的回忆 ❤️</p>
-</div>
+    .dot.filled {
+      background: white;
+    }
 
-<script>
-function checkPassword() {
-  var password = document.getElementById("password").value;
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 78px);
+      gap: 18px;
+      justify-content: center;
+    }
 
-  if(password === "1229") {
-    window.location.href = "home.html"; // 👉 跳去新页面
-  } else {
-    alert("Wrong password ❌");
-  }
-}
-</script>
+    .key {
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,0.18);
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+      backdrop-filter: blur(3px);
+      transition: transform 0.1s, background 0.2s;
+    }
 
-</body>
-</html>
+    .key:active {
+      transform: scale(0.95);
+      background: rgba(255,255,255,0.3);
+    }
+
+    .empty {
+      visibility: hidden;
+    }
+
+    .bottom-row {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, 78px);
+      gap: 18px;
