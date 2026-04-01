@@ -20,7 +20,6 @@ body {
 .title {
   font-size: 20px;
   margin-bottom: 20px;
-  color: #fff;
 }
 
 .dots {
@@ -40,4 +39,106 @@ body {
   background: white;
 }
 
-.key
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 90px);
+  gap: 18px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.key {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.key:active {
+  transform: scale(0.9);
+}
+
+.num {
+  font-size: 26px;
+}
+
+.letters {
+  font-size: 12px;
+}
+
+.bottom-row {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 25px;
+}
+
+.text-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+}
+
+.message {
+  margin-top: 20px;
+  color: #ffb3b3;
+}
+
+.shake {
+  animation: shake 0.3s;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  50% { transform: translateX(8px); }
+  75% { transform: translateX(-8px); }
+  100% { transform: translateX(0); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="screen" id="screen">
+  <div class="title">Touch ID or Enter Passcode</div>
+
+  <div class="dots">
+    <div class="dot" id="dot1"></div>
+    <div class="dot" id="dot2"></div>
+    <div class="dot" id="dot3"></div>
+    <div class="dot" id="dot4"></div>
+  </div>
+
+  <div class="keypad">
+    <button class="key" onclick="pressKey('1')">
+      <div class="num">1</div>
+      <div class="letters">&nbsp;</div>
+    </button>
+
+    <button class="key" onclick="pressKey('2')">
+      <div class="num">2</div>
+      <div class="letters">ABC</div>
+    </button>
+
+    <button class="key" onclick="pressKey('3')">
+      <div class="num">3</div>
+      <div class="letters">DEF</div>
+    </button>
+
+    <button class="key" onclick="pressKey('4')">
+      <div class="num">4</div>
+      <div class="letters">GHI</div>
+    </button>
+
+    <button class="key" onclick="pressKey('5')">
+      <div class="num">5</div>
+      <div class="letters">JKL</div>
+    </button>
+
+    <button class="key" onclick="pressKey('6')">
+      <div class="num
