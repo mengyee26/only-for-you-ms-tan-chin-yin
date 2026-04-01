@@ -1,136 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Passcode</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<meta charset="UTF-8">
+<title>Password</title>
 
-    body {
-      font-family: Arial, sans-serif;
-      height: 100vh;
-      overflow: hidden;
-      position: relative;
-      color: white;
-    }
+<style>
+body {
+  background: #2c2c2c;
+  color: white;
+  text-align: center;
+  font-family: sans-serif;
+}
 
-    .bg {
-      position: fixed;
-      inset: 0;
-      background: linear-gradient(to bottom, #cfcfcf, #b8b8b8);
-    }
+.screen {
+  margin-top: 50px;
+}
 
-    .blur-shape {
-      position: absolute;
-      width: 220px;
-      height: 220px;
-      background: rgba(0,0,0,0.35);
-      filter: blur(40px);
-      border-radius: 30px;
-    }
+.dots {
+  margin: 20px;
+}
 
-    .shape1 { top: 180px; left: 40px; }
-    .shape2 { top: 210px; right: 40px; }
-    .shape3 { bottom: 130px; left: 90px; width: 180px; height: 180px; }
+.dot {
+  width: 15px;
+  height: 15px;
+  border: 2px solid white;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 5px;
+}
 
-    .screen {
-      position: relative;
-      z-index: 2;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: center;
-      padding-top: 90px;
-    }
+.filled {
+  background: white;
+}
 
-    .title {
-      font-size: 18px;
-      font-weight: 400;
-      margin-bottom: 22px;
-      text-align: center;
-    }
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 80px);
+  gap: 20px;
+  justify-content: center;
+}
 
-    .dots {
-      display: flex;
-      gap: 18px;
-      margin-bottom: 34px;
-      min-height: 16px;
-    }
+button {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  font-size: 20px;
+  border: none;
+  background: #555;
+  color: white;
+}
 
-    .dot {
-      width: 14px;
-      height: 14px;
-      border: 2px solid white;
-      border-radius: 50%;
-      background: transparent;
-    }
+button:active {
+  transform: scale(0.9);
+}
 
-    .dot.filled {
-      background: white;
-    }
+.error {
+  color: pink;
+  margin-top: 15px;
+}
+</style>
 
-    .keypad {
-      display: grid;
-      grid-template-columns: repeat(3, 86px);
-      gap: 18px 22px;
-      justify-content: center;
-    }
+</head>
 
-    .key {
-      width: 86px;
-      height: 86px;
-      border-radius: 50%;
-      border: none;
-      background: rgba(255,255,255,0.18);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      backdrop-filter: blur(3px);
-      -webkit-backdrop-filter: blur(3px);
-      cursor: pointer;
-    }
+<body>
 
-    .key:active {
-      transform: scale(0.96);
-      background: rgba(255,255,255,0.28);
-    }
+<h2>Enter Passcode</h2>
 
-    .num {
-      font-size: 34px;
-      line-height: 1;
-      margin-bottom: 4px;
-    }
+<div class="dots">
+  <span class="dot" id="d1"></span>
+  <span class="dot" id="d2"></span>
+  <span class="dot" id="d3"></span>
+  <span class="dot" id="d4"></span>
+</div>
 
-    .letters {
-      font-size: 11px;
-      letter-spacing: 1px;
-      opacity: 0.95;
-    }
+<div class="keypad">
+  <button onclick="press(1)">1</button>
+  <button onclick="press(2)">2</button>
+  <button onclick="press(3)">3</button>
+  <button onclick="press(4)">4</button>
+  <button onclick="press(5)">5</button>
+  <button onclick="press(6)">6</button>
+  <button onclick="press(7)">7</button>
+  <button onclick="press(8)">8</button>
+  <button onclick="press(9)">9</button>
+  <div></div>
+  <button onclick="press(0)">0</button>
+  <div></div>
+</div>
 
-    .empty {
-      visibility: hidden;
-    }
+<div class="error" id="error"></div>
 
-    .bottom-row {
-      margin-top: 18px;
-      display: grid;
-      grid-template-columns: repeat(3, 86px);
-      gap: 18px 22px;
-      justify-content: center;
-      align-items: center;
-    }
+<!-- 🔊 声音 -->
+<audio id="clickSound" src="click.mp3"></audio>
 
-    .text-btn {
-      border: none;
-      background: transparent;
+<script>
+let input = "";
+const correct = "1229";
+
+function playSound() {
+  const sound = document.getElementById("clickSound");
+  sound.currentTime = 0;
+  sound.play();
+}
+
+function press(num) {
+  playSound();
+
+  if (input.length < 4) {
+    input += num;
+    updateDots();
+  }
+
+  if (input.length === 4) {
+    setTimeout(check, 200);
+  }
+}
+
+function updateDots() {
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById("d" + i).classList.remove("filled");
+  }
+
+  for (let i = 0; i < input.length; i++) {
+    document.getElementById("d" + (i + 1)).classList.add("filled");
+  }
+}
+
+function check() {
+  if (input === correct) {
+    window.location.href = "main.html"; // 👉 这里改成你的页面
+  } else {
+    document.getElementById("error").innerText = "Wrong passcode";
+    input = "";
+    updateDots();
+  }
+}
+</script>
+
+</body>
+</html>      background: transparent;
       color: white;
       font-size: 18px;
       cursor: pointer;
