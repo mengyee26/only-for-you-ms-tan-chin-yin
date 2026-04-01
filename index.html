@@ -2,18 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Password</title>
+<title>Passcode</title>
 
 <style>
 body {
-  background: #2c2c2c;
+  margin: 0;
+  background: #000;
   color: white;
-  text-align: center;
   font-family: sans-serif;
+  text-align: center;
 }
 
 .screen {
-  margin-top: 50px;
+  margin-top: 80px;
+}
+
+.title {
+  font-size: 20px;
+  margin-bottom: 20px;
 }
 
 .dots {
@@ -26,7 +32,7 @@ body {
   border: 2px solid white;
   border-radius: 50%;
   display: inline-block;
-  margin: 5px;
+  margin: 6px;
 }
 
 .filled {
@@ -35,73 +41,278 @@ body {
 
 .keypad {
   display: grid;
-  grid-template-columns: repeat(3, 80px);
+  grid-template-columns: repeat(3, 90px);
   gap: 20px;
   justify-content: center;
+  margin-top: 30px;
 }
 
-button {
-  width: 80px;
-  height: 80px;
+.key {
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
-  font-size: 20px;
+  background: #333;
   border: none;
-  background: #555;
   color: white;
+  font-size: 22px;
 }
 
-button:active {
+.key:active {
   transform: scale(0.9);
 }
 
-.error {
+.bottom-row {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 25px;
+}
+
+.text-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+}
+
+.message {
+  margin-top: 20px;
   color: pink;
-  margin-top: 15px;
+  min-height: 20px;
+}
+
+.shake {
+  animation: shake 0.3s;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  50% { transform: translateX(8px); }
+  75% { transform: translateX(-8px); }
+  100% { transform: translateX(0); }
 }
 </style>
-
 </head>
 
 <body>
 
-<h2>Enter Passcode</h2>
+<div class="screen" id="screen">
+  <div class="title">Touch ID or Enter Passcode</div>
 
-<div class="dots">
-  <span class="dot" id="d1"></span>
-  <span class="dot" id="d2"></span>
-  <span class="dot" id="d3"></span>
-  <span class="dot" id="d4"></span>
+  <div class="dots">
+    <div class="dot" id="dot1"></div>
+    <div class="dot" id="dot2"></div>
+    <div class="dot" id="dot3"></div>
+    <div class="dot" id="dot4"></div>
+  </div>
+
+  <div class="keypad">
+    <button class="key" onclick="pressKey('1')">1</button>
+    <button class="key" onclick="pressKey('2')">2</button>
+    <button class="key" onclick="pressKey('3')">3</button>
+    <button class="key" onclick="pressKey('4')">4</button>
+    <button class="key" onclick="pressKey('5')">5</button>
+    <button class="key" onclick="pressKey('6')">6</button>
+    <button class="key" onclick="pressKey('7')">7</button>
+    <button class="key" onclick="pressKey('8')">8</button>
+    <button class="key" onclick="pressKey('9')">9</button>
+  </div>
+
+  <div class="bottom-row">
+    <button class="text-btn" onclick="clearCode()">Emergency</button>
+    <button class="key" onclick="pressKey('0')">0</button>
+    <button class="text-btn" onclick="deleteLast()">Cancel</button>
+  </div>
+
+  <div class="message" id="message"></div>
 </div>
-
-<div class="keypad">
-  <button onclick="press(1)">1</button>
-  <button onclick="press(2)">2</button>
-  <button onclick="press(3)">3</button>
-  <button onclick="press(4)">4</button>
-  <button onclick="press(5)">5</button>
-  <button onclick="press(6)">6</button>
-  <button onclick="press(7)">7</button>
-  <button onclick="press(8)">8</button>
-  <button onclick="press(9)">9</button>
-  <div></div>
-  <button onclick="press(0)">0</button>
-  <div></div>
-</div>
-
-<div class="error" id="error"></div>
 
 <!-- 🔊 声音 -->
-<audio id="clickSound" src="click.mp3"></audio>
+<audio id="clickSound" src="typing on phone sound effect.mp3"></audio>
+<audio id="unlockSound" src="unlock.mp3"></audio>
 
 <script>
+const correctPassword = "1229";
 let input = "";
-const correct = "1229";
 
-function playSound() {
-  const sound = document.getElementById("clickSound");
-  sound.currentTime = 0;
-  sound.play();
+function playClick() {
+  const s = document.getElementById("clickSound");
+  s.currentTime = 0;
+  s.play();
 }
+
+function playUnlock() {
+  const s = document.getElementById("unlockSound");
+  s.currentTime = 0;
+  s.play();
+}
+
+function updateDots() {
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById("dot" + i).classList.remove("filled");
+  }
+  for (let i = 0; i < input.length; i++) {
+    document.getElementById("dot" + (i + 1)).classList.add("filled");
+  }
+}
+
+function pressKey(num) {
+  playClick();
+
+  if (input.length >= 4) return;
+
+  input += num;
+  updateDots();
+  document.getElementById("message").textContent = "";
+
+  if (input.length === 4) {
+    setTimeout(checkPassword, 150);
+  }
+}
+
+function clearCode() {
+  input = "";
+  updateDots();
+  document.getElementById("message").textContent = "";
+}
+
+function deleteLast() {
+  input = input.slice(0, -1);
+  updateDots();
+}
+
+function checkPassword() {
+  const screen = document.getElementById("screen");
+  const message = document.getElementById("message");
+
+  if (input === correctPassword) {
+    playUnlock();
+
+    message.style.color = "#b6ffb6";
+    message.textContent = "Access granted";
+
+    setTimeout(() => {
+      window.location.href = "home.html";
+    }, 500);
+
+  } else {
+    message.style.color = "#ffb6b6";
+    message.textContent = "Wrong passcode";
+
+    screen.classList.add("shake");
+    setTimeout(() => screen.classList.remove("shake"), 300);
+
+    input = "";
+    updateDots();
+  }
+}
+</script>
+
+</body>
+</html>    <button class="key" onclick="pressKey('1')">1</button>
+    <button class="key" onclick="pressKey('2')">2</button>
+    <button class="key" onclick="pressKey('3')">3</button>
+    <button class="key" onclick="pressKey('4')">4</button>
+    <button class="key" onclick="pressKey('5')">5</button>
+    <button class="key" onclick="pressKey('6')">6</button>
+    <button class="key" onclick="pressKey('7')">7</button>
+    <button class="key" onclick="pressKey('8')">8</button>
+    <button class="key" onclick="pressKey('9')">9</button>
+  </div>
+
+  <div class="bottom-row">
+    <button class="text-btn" onclick="clearCode()">Emergency</button>
+    <button class="key" onclick="pressKey('0')">0</button>
+    <button class="text-btn" onclick="deleteLast()">Cancel</button>
+  </div>
+
+  <div class="message" id="message"></div>
+</div>
+
+<!-- 🔊 声音 -->
+<audio id="clickSound" src="typing on phone sound effect.mp3"></audio>
+<audio id="unlockSound" src="unlock.mp3"></audio>
+
+<script>
+const correctPassword = "1229";
+let input = "";
+
+function playClick() {
+  const s = document.getElementById("clickSound");
+  s.currentTime = 0;
+  s.play();
+}
+
+function playUnlock() {
+  const s = document.getElementById("unlockSound");
+  s.currentTime = 0;
+  s.play();
+}
+
+function updateDots() {
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById("dot" + i).classList.remove("filled");
+  }
+  for (let i = 0; i < input.length; i++) {
+    document.getElementById("dot" + (i + 1)).classList.add("filled");
+  }
+}
+
+function pressKey(num) {
+  playClick();
+
+  if (input.length >= 4) return;
+
+  input += num;
+  updateDots();
+  document.getElementById("message").textContent = "";
+
+  if (input.length === 4) {
+    setTimeout(checkPassword, 150);
+  }
+}
+
+function clearCode() {
+  input = "";
+  updateDots();
+  document.getElementById("message").textContent = "";
+}
+
+function deleteLast() {
+  input = input.slice(0, -1);
+  updateDots();
+}
+
+function checkPassword() {
+  const screen = document.getElementById("screen");
+  const message = document.getElementById("message");
+
+  if (input === correctPassword) {
+    playUnlock();
+
+    message.style.color = "#b6ffb6";
+    message.textContent = "Access granted";
+
+    setTimeout(() => {
+      window.location.href = "home.html";
+    }, 500);
+
+  } else {
+    message.style.color = "#ffb6b6";
+    message.textContent = "Wrong passcode";
+
+    screen.classList.add("shake");
+    setTimeout(() => screen.classList.remove("shake"), 300);
+
+    input = "";
+    updateDots();
+  }
+}
+</script>
+
+</body>
+</html>}
 
 function press(num) {
   playSound();
