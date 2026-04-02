@@ -214,25 +214,230 @@ function press(num){
   if(input.length === 4){
     setTimeout(check,200);
   }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lock Screen</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  -webkit-tap-highlight-color: transparent;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Arial;
+}
+
+body{
+  height:100vh;
+  overflow:hidden;
+}
+
+/* ✅ 直接用内建背景（不用你上传） */
+.bg{
+  position:fixed;
+  inset:0;
+  background:url("https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1000&auto=format&fit=crop") center/cover no-repeat;
+}
+
+/* ✅ iPhone 模糊层 */
+.blur{
+  position:fixed;
+  inset:0;
+  backdrop-filter:blur(35px);
+  -webkit-backdrop-filter:blur(35px);
+  background:rgba(255,255,255,0.15);
+}
+
+/* 内容 */
+.container{
+  position:relative;
+  z-index:2;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding-top:120px;
+}
+
+/* 标题 */
+.title{
+  color:white;
+  font-size:18px;
+  margin-bottom:25px;
+}
+
+/* 点 */
+.dots{
+  display:flex;
+  gap:15px;
+  margin-bottom:35px;
+}
+
+.dot{
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  border:2px solid white;
+}
+
+.filled{
+  background:white;
+}
+
+/* 键盘 */
+.keypad{
+  display:grid;
+  grid-template-columns:repeat(3,80px);
+  gap:22px;
+}
+
+/* 按钮 */
+.key{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  border:none;
+  color:white;
+  font-size:22px;
+
+  background:rgba(255,255,255,0.25);
+  backdrop-filter:blur(20px);
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+}
+
+.key:active{
+  transform:scale(0.95);
+}
+
+/* 字母 */
+.letters{
+  font-size:10px;
+  letter-spacing:2px;
+}
+
+/* 底部 */
+.bottom{
+  margin-top:30px;
+  width:260px;
+  display:flex;
+  justify-content:space-between;
+  color:white;
+}
+
+button.text{
+  background:none;
+  border:none;
+  color:white;
+  font-size:16px;
+}
+
+/* 解锁 */
+.success{
+  position:fixed;
+  inset:0;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  font-size:30px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg"></div>
+<div class="blur"></div>
+
+<div class="container">
+
+<div class="title">Touch ID or Enter Passcode</div>
+
+<div class="dots" id="dots">
+<div class="dot"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+</div>
+
+<div class="keypad">
+<button class="key" data="1">1</button>
+<button class="key" data="2">2<div class="letters">ABC</div></button>
+<button class="key" data="3">3<div class="letters">DEF</div></button>
+
+<button class="key" data="4">4<div class="letters">GHI</div></button>
+<button class="key" data="5">5<div class="letters">JKL</div></button>
+<button class="key" data="6">6<div class="letters">MNO</div></button>
+
+<button class="key" data="7">7<div class="letters">PQRS</div></button>
+<button class="key" data="8">8<div class="letters">TUV</div></button>
+<button class="key" data="9">9<div class="letters">WXYZ</div></button>
+
+<div></div>
+<button class="key" data="0">0</button>
+<div></div>
+</div>
+
+<div class="bottom">
+<button class="text" onclick="clearInput()">Emergency</button>
+<button class="text" onclick="clearInput()">Cancel</button>
+</div>
+
+</div>
+
+<div class="success" id="success">Unlocked 💖</div>
+
+<audio id="click" src="typing on phone sound effect.mp3"></audio>
+<audio id="unlock" src="unlock.mp3"></audio>
+
+<script>
+let input="";
+const correct="1229";
+const dots=document.querySelectorAll(".dot");
+
+function updateDots(){
+dots.forEach((d,i)=>{
+d.classList.toggle("filled",i<input.length);
+});
+}
+
+function press(num){
+document.getElementById("click").play();
+if(input.length<4){
+input+=num;
+updateDots();
+}
+if(input.length===4){
+setTimeout(check,200);
+}
 }
 
 function check(){
-  if(input === correct){
-    document.getElementById("unlock").play();
-    document.getElementById("success").style.display="flex";
-  }else{
-    input="";
-    updateDots();
-  }
+if(input===correct){
+document.getElementById("unlock").play();
+document.getElementById("success").style.display="flex";
+}else{
+input="";
+updateDots();
+}
 }
 
 function clearInput(){
-  input="";
-  updateDots();
+input="";
+updateDots();
 }
 
 document.querySelectorAll(".key").forEach(btn=>{
-  btn.onclick=()=>press(btn.getAttribute("data"));
+btn.onclick=()=>press(btn.getAttribute("data"));
 });
 </script>
 
