@@ -37,7 +37,7 @@ body {
   filter: blur(10px);
   transform: scale(1.1);
   z-index: 0;
-  pointer-events: none; /* 重点：不要挡住点击 */
+  pointer-events: none;
 }
 
 /* 中间微光 */
@@ -82,6 +82,12 @@ body {
   height: 14px;
   border: 2px solid white;
   border-radius: 50%;
+  background: transparent;
+  transition: 0.2s;
+}
+
+.dot.filled {
+  background: white;
 }
 
 /* 数字键盘 */
@@ -108,8 +114,6 @@ body {
   -webkit-backdrop-filter: blur(10px);
   cursor: pointer;
   transition: background 0.2s ease, transform 0.08s ease;
-  -webkit-user-select: none;
-  user-select: none;
   touch-action: manipulation;
 }
 
@@ -131,11 +135,18 @@ body {
   color: white;
   font-size: 16px;
   opacity: 0.85;
-  pointer-events: none;
 }
 
 .bottom div {
-  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* 错误提示 */
+.message {
+  margin-top: 18px;
+  color: #ffb3b3;
+  font-size: 14px;
+  height: 18px;
 }
 </style>
 </head>
@@ -168,20 +179,68 @@ body {
     <div class="key" data-number="0">0</div>
     <div></div>
   </div>
+
+  <div class="message" id="message"></div>
 </div>
 
 <div class="bottom">
-  <div>Emergency</div>
-  <div>Cancel</div>
+  <div id="emergencyBtn">Emergency</div>
+  <div id="cancelBtn">Cancel</div>
 </div>
 
 <script>
 const keys = document.querySelectorAll('.key');
+const dots = document.querySelectorAll('.dot');
+const message = document.getElementById('message');
+const cancelBtn = document.getElementById('cancelBtn');
+
+const correctPassword = "1229";
+let input = "";
+
+function updateDots() {
+  dots.forEach((dot, index) => {
+    if (index < input.length) {
+      dot.classList.add("filled");
+    } else {
+      dot.classList.remove("filled");
+    }
+  });
+}
+
+function resetInput() {
+  input = "";
+  updateDots();
+}
+
+function checkPassword() {
+  if (input === correctPassword) {
+    message.textContent = "";
+    window.location.href = "home.html";
+  } else {
+    message.textContent = "Wrong Passcode";
+    setTimeout(() => {
+      resetInput();
+      message.textContent = "";
+    }, 700);
+  }
+}
 
 keys.forEach(key => {
   key.addEventListener('click', function () {
-    console.log('Pressed:', this.dataset.number);
+    if (input.length < 4) {
+      input += this.dataset.number;
+      updateDots();
+
+      if (input.length === 4) {
+        setTimeout(checkPassword, 150);
+      }
+    }
   });
+});
+
+cancelBtn.addEventListener('click', () => {
+  resetInput();
+  message.textContent = "";
 });
 </script>
 
