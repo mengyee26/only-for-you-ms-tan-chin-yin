@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Passcode Lock</title>
 
   <style>
@@ -11,13 +11,13 @@
       padding: 0;
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
     }
 
     html, body {
       width: 100%;
       height: 100%;
       overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
       background: #000;
     }
 
@@ -30,72 +30,69 @@
       width: 100%;
       height: 100vh;
       background: url("your-background.jpg") center center / cover no-repeat;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       overflow: hidden;
     }
 
-    /* 背景模糊层，不挡点击 */
     .screen::before {
       content: "";
       position: absolute;
       inset: 0;
-      background: rgba(255, 255, 255, 0.10);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      z-index: 0;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(255,255,255,0.18);
       pointer-events: none;
+      z-index: 1;
     }
 
-    /* 再压一层暗色，让文字更像第二张图 */
     .screen::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.28);
-      z-index: 0;
+      background: rgba(0,0,0,0.18);
       pointer-events: none;
+      z-index: 1;
     }
 
-    .lock-wrap {
+    .phone {
       position: relative;
       z-index: 2;
       width: 100%;
       max-width: 430px;
       height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 20px 28px;
+      margin: 0 auto;
     }
 
     .title {
-      color: #ffffff;
-      font-size: 20px;
-      font-weight: 400;
+      position: absolute;
+      top: 120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
       text-align: center;
-      margin-bottom: 28px;
-      text-shadow: 0 1px 10px rgba(0,0,0,0.35);
+      color: #fff;
+      font-size: 17px;
+      font-weight: 400;
+      line-height: 1.35;
+      letter-spacing: 0;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.2);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
     }
 
     .dots {
+      position: absolute;
+      top: 175px;
+      left: 50%;
+      transform: translateX(-50%);
       display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 36px;
-      min-height: 18px;
+      gap: 18px;
     }
 
     .dot {
       width: 14px;
       height: 14px;
       border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.92);
+      border: 2px solid rgba(255,255,255,0.95);
       background: transparent;
-      transition: all 0.15s ease;
     }
 
     .dot.filled {
@@ -103,156 +100,161 @@
     }
 
     .keypad {
-      width: 100%;
-      max-width: 320px;
+      position: absolute;
+      top: 235px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
       display: grid;
-      grid-template-columns: repeat(3, 86px);
-      justify-content: center;
-      gap: 18px 22px;
+      grid-template-columns: repeat(3, 72px);
+      grid-auto-rows: 72px;
+      justify-content: space-between;
+      row-gap: 24px;
+      column-gap: 24px;
     }
 
     .key {
-      width: 86px;
-      height: 86px;
+      width: 72px;
+      height: 72px;
       border: none;
       border-radius: 50%;
-      background: rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.20);
       color: #fff;
+      cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.10);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
       user-select: none;
-      box-shadow:
-        inset 0 1px 1px rgba(255,255,255,0.10),
-        0 6px 18px rgba(0,0,0,0.22);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      transition: transform 0.08s ease, background 0.15s ease;
-      pointer-events: auto;
+      -webkit-user-select: none;
     }
 
     .key:active {
-      transform: scale(0.94);
-      background: rgba(255,255,255,0.24);
+      transform: scale(0.95);
+      background: rgba(255,255,255,0.28);
     }
 
     .num {
-      font-size: 22px;
-      line-height: 1;
+      font-size: 18px;
       font-weight: 400;
+      line-height: 1;
       margin-bottom: 4px;
       pointer-events: none;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
     }
 
     .letters {
-      font-size: 11px;
+      font-size: 9px;
+      font-weight: 600;
       line-height: 1;
-      letter-spacing: 2px;
-      opacity: 0.95;
+      letter-spacing: 1.8px;
       pointer-events: none;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
     }
 
     .empty {
-      width: 86px;
-      height: 86px;
+      width: 72px;
+      height: 72px;
     }
 
-    .bottom-bar {
-      width: 100%;
-      max-width: 320px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 18px;
-      padding: 0 2px;
-    }
-
-    .bottom-btn {
+    .bottom-left,
+    .bottom-right {
+      position: absolute;
+      top: 560px;
+      color: rgba(255,255,255,0.95);
+      font-size: 16px;
+      font-weight: 400;
       background: transparent;
       border: none;
-      color: rgba(255,255,255,0.92);
-      font-size: 17px;
-      font-weight: 400;
       cursor: pointer;
-      pointer-events: auto;
+      z-index: 3;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
+    }
+
+    .bottom-left {
+      left: 42px;
+    }
+
+    .bottom-right {
+      right: 42px;
     }
 
     .message {
-      min-height: 22px;
-      margin-top: 16px;
-      color: #ffb8b8;
-      font-size: 15px;
+      position: absolute;
+      top: 600px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
       text-align: center;
-      text-shadow: 0 1px 6px rgba(0,0,0,0.25);
+      min-height: 20px;
+      color: #ffbcbc;
+      font-size: 14px;
+      z-index: 3;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
     }
 
     .success-screen {
       position: fixed;
       inset: 0;
-      z-index: 9999;
       display: none;
       justify-content: center;
       align-items: center;
       background: url("your-background.jpg") center center / cover no-repeat;
+      z-index: 9999;
     }
 
     .success-screen::before {
       content: "";
       position: absolute;
       inset: 0;
-      background: rgba(255,255,255,0.08);
-      backdrop-filter: blur(3px);
-      -webkit-backdrop-filter: blur(3px);
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
     }
 
     .success-text {
       position: relative;
       z-index: 2;
       color: #fff;
-      font-size: 30px;
+      font-size: 28px;
       font-weight: 500;
-      text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
     }
 
     @media (max-width: 390px) {
-      .title {
-        font-size: 18px;
-      }
-
+      .title { top: 112px; font-size: 16px; }
+      .dots { top: 168px; }
       .keypad {
-        grid-template-columns: repeat(3, 78px);
-        gap: 16px 18px;
-        max-width: 300px;
+        top: 225px;
+        width: 282px;
+        grid-template-columns: repeat(3, 68px);
+        grid-auto-rows: 68px;
+        row-gap: 22px;
+        column-gap: 22px;
       }
-
       .key, .empty {
-        width: 78px;
-        height: 78px;
+        width: 68px;
+        height: 68px;
       }
-
-      .num {
-        font-size: 20px;
+      .num { font-size: 17px; }
+      .letters { font-size: 8px; }
+      .bottom-left, .bottom-right {
+        top: 542px;
+        font-size: 15px;
       }
-
-      .letters {
-        font-size: 10px;
-      }
-
-      .bottom-bar {
-        max-width: 300px;
-      }
-
-      .bottom-btn {
-        font-size: 16px;
-      }
+      .bottom-left { left: 34px; }
+      .bottom-right { right: 34px; }
+      .message { top: 580px; }
     }
   </style>
 </head>
 <body>
   <div class="screen">
-    <div class="lock-wrap">
+    <div class="phone">
       <div class="title">Touch ID or Enter Passcode</div>
 
       <div class="dots" id="dots">
@@ -263,63 +265,61 @@
       </div>
 
       <div class="keypad">
-        <button class="key" type="button" data-num="1">
+        <button class="key" data-num="1" type="button">
           <span class="num">1</span>
         </button>
 
-        <button class="key" type="button" data-num="2">
+        <button class="key" data-num="2" type="button">
           <span class="num">2</span>
           <span class="letters">ABC</span>
         </button>
 
-        <button class="key" type="button" data-num="3">
+        <button class="key" data-num="3" type="button">
           <span class="num">3</span>
           <span class="letters">DEF</span>
         </button>
 
-        <button class="key" type="button" data-num="4">
+        <button class="key" data-num="4" type="button">
           <span class="num">4</span>
           <span class="letters">GHI</span>
         </button>
 
-        <button class="key" type="button" data-num="5">
+        <button class="key" data-num="5" type="button">
           <span class="num">5</span>
           <span class="letters">JKL</span>
         </button>
 
-        <button class="key" type="button" data-num="6">
+        <button class="key" data-num="6" type="button">
           <span class="num">6</span>
           <span class="letters">MNO</span>
         </button>
 
-        <button class="key" type="button" data-num="7">
+        <button class="key" data-num="7" type="button">
           <span class="num">7</span>
           <span class="letters">PQRS</span>
         </button>
 
-        <button class="key" type="button" data-num="8">
+        <button class="key" data-num="8" type="button">
           <span class="num">8</span>
           <span class="letters">TUV</span>
         </button>
 
-        <button class="key" type="button" data-num="9">
+        <button class="key" data-num="9" type="button">
           <span class="num">9</span>
           <span class="letters">WXYZ</span>
         </button>
 
         <div class="empty"></div>
 
-        <button class="key" type="button" data-num="0">
+        <button class="key" data-num="0" type="button">
           <span class="num">0</span>
         </button>
 
         <div class="empty"></div>
       </div>
 
-      <div class="bottom-bar">
-        <button class="bottom-btn" type="button" id="emergencyBtn">Emergency</button>
-        <button class="bottom-btn" type="button" id="cancelBtn">Cancel</button>
-      </div>
+      <button class="bottom-left" id="emergencyBtn" type="button">Emergency</button>
+      <button class="bottom-right" id="cancelBtn" type="button">Cancel</button>
 
       <div class="message" id="message"></div>
     </div>
@@ -347,13 +347,15 @@
 
     function playSound(audio) {
       if (!audio) return;
-      audio.currentTime = 0;
-      audio.play().catch(() => {});
+      try {
+        audio.currentTime = 0;
+        audio.play();
+      } catch (e) {}
     }
 
     function updateDots() {
-      dots.forEach((dot, index) => {
-        if (index < input.length) {
+      dots.forEach((dot, i) => {
+        if (i < input.length) {
           dot.classList.add("filled");
         } else {
           dot.classList.remove("filled");
@@ -361,81 +363,57 @@
       });
     }
 
-    function resetInput() {
+    function clearInput() {
       input = "";
       updateDots();
-    }
-
-    function showMessage(text, color = "#ffb8b8") {
-      message.textContent = text;
-      message.style.color = color;
-    }
-
-    function unlock() {
-      playSound(unlockSound);
-      showMessage("Correct password", "#caffd0");
-      setTimeout(() => {
-        successScreen.style.display = "flex";
-      }, 250);
+      message.textContent = "";
     }
 
     function checkPassword() {
       if (input === correctPassword) {
-        unlock();
-      } else {
-        showMessage("Wrong passcode");
+        playSound(unlockSound);
+        message.style.color = "#d6ffd6";
+        message.textContent = "Correct password";
         setTimeout(() => {
-          resetInput();
-          showMessage("");
-        }, 500);
+          successScreen.style.display = "flex";
+        }, 250);
+      } else {
+        message.style.color = "#ffbcbc";
+        message.textContent = "Wrong passcode";
+        setTimeout(() => {
+          clearInput();
+        }, 450);
       }
     }
 
     function pressNumber(num) {
       if (input.length >= 4) return;
-
       playSound(clickSound);
       input += num;
       updateDots();
-      showMessage("");
+      message.textContent = "";
 
       if (input.length === 4) {
-        setTimeout(checkPassword, 150);
+        setTimeout(checkPassword, 120);
       }
     }
 
     keys.forEach((key) => {
-      key.addEventListener("click", function () {
-        const num = this.getAttribute("data-num");
-        pressNumber(num);
+      key.addEventListener("click", () => {
+        pressNumber(key.dataset.num);
       });
-
-      key.addEventListener("touchstart", function () {
-        this.style.transform = "scale(0.94)";
-      }, { passive: true });
-
-      key.addEventListener("touchend", function () {
-        this.style.transform = "";
-      }, { passive: true });
     });
 
-    cancelBtn.addEventListener("click", () => {
-      resetInput();
-      showMessage("");
-    });
-
-    emergencyBtn.addEventListener("click", () => {
-      resetInput();
-      showMessage("");
-    });
+    cancelBtn.addEventListener("click", clearInput);
+    emergencyBtn.addEventListener("click", clearInput);
 
     document.addEventListener("keydown", (e) => {
       if (/^[0-9]$/.test(e.key)) {
         pressNumber(e.key);
-      } else if (e.key === "Backspace") {
+      }
+      if (e.key === "Backspace") {
         input = input.slice(0, -1);
         updateDots();
-        showMessage("");
       }
     });
   </script>
