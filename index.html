@@ -33,22 +33,24 @@
       overflow: hidden;
     }
 
+    /* 灰白模糊层，做成像图2那种雾感，不压黑 */
     .screen::before {
       content: "";
       position: absolute;
       inset: 0;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      background: rgba(255,255,255,0.18);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(255, 255, 255, 0.25);
       pointer-events: none;
       z-index: 1;
     }
 
+    /* 不要黑色遮罩 */
     .screen::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: rgba(0,0,0,0.18);
+      background: transparent;
       pointer-events: none;
       z-index: 1;
     }
@@ -74,7 +76,7 @@
       font-weight: 400;
       line-height: 1.35;
       letter-spacing: 0;
-      text-shadow: 0 1px 8px rgba(0,0,0,0.2);
+      text-shadow: 0 1px 8px rgba(0,0,0,0.12);
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
     }
 
@@ -210,9 +212,9 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: rgba(255,255,255,0.06);
-      backdrop-filter: blur(2px);
-      -webkit-backdrop-filter: blur(2px);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      background: rgba(255,255,255,0.18);
     }
 
     .success-text {
@@ -221,7 +223,7 @@
       color: #fff;
       font-size: 28px;
       font-weight: 500;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      text-shadow: 0 2px 10px rgba(0,0,0,0.18);
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
     }
 
