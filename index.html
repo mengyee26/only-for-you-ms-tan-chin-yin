@@ -1,423 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Passcode Lock</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lock Screen</title>
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
-    }
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Arial;
+}
 
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #000;
-    }
+body {
+  height: 100vh;
+  overflow: hidden;
+}
 
-    body {
-      position: relative;
-    }
+/* 背景 */
+.bg {
+  position: fixed;
+  inset: 0;
+  background: url("your-background.jpg") center/cover no-repeat;
+  z-index: 0;
+}
 
-    .screen {
-      position: relative;
-      width: 100%;
-      height: 100vh;
-      background: url("your-background.jpg") center center / cover no-repeat;
-      overflow: hidden;
-    }
+/* 真实 iPhone 模糊层 */
+.blur {
+  position: fixed;
+  inset: 0;
+  backdrop-filter: blur(35px);
+  -webkit-backdrop-filter: blur(35px);
+  background: rgba(255,255,255,0.08);
+  z-index: 1;
+}
 
-    /* 灰白模糊层，做成像图2那种雾感，不压黑 */
-    .screen::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      background: rgba(255, 255, 255, 0.25);
-      pointer-events: none;
-      z-index: 1;
-    }
+/* 内容 */
+.container {
+  position: relative;
+  z-index: 2;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 120px;
+}
 
-    /* 不要黑色遮罩 */
-    .screen::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: transparent;
-      pointer-events: none;
-      z-index: 1;
-    }
+/* 标题 */
+.title {
+  color: white;
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 25px;
+}
 
-    .phone {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      max-width: 430px;
-      height: 100vh;
-      margin: 0 auto;
-    }
+/* 点 */
+.dots {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 35px;
+}
 
-    .title {
-      position: absolute;
-      top: 120px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 90%;
-      text-align: center;
-      color: #fff;
-      font-size: 17px;
-      font-weight: 400;
-      line-height: 1.35;
-      letter-spacing: 0;
-      text-shadow: 0 1px 8px rgba(0,0,0,0.12);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
-    }
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
 
-    .dots {
-      position: absolute;
-      top: 175px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 18px;
-    }
+.filled {
+  background: white;
+}
 
-    .dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.95);
-      background: transparent;
-    }
+/* 数字盘 */
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 80px);
+  gap: 22px;
+  justify-content: center;
+}
 
-    .dot.filled {
-      background: #fff;
-    }
+/* 按钮（重点玻璃效果） */
+.key {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: none;
+  color: white;
+  font-size: 22px;
 
-    .keypad {
-      position: absolute;
-      top: 235px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 300px;
-      display: grid;
-      grid-template-columns: repeat(3, 72px);
-      grid-auto-rows: 72px;
-      justify-content: space-between;
-      row-gap: 24px;
-      column-gap: 24px;
-    }
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 
-    .key {
-      width: 72px;
-      height: 72px;
-      border: none;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.20);
-      color: #fff;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      box-shadow: inset 0 1px 1px rgba(255,255,255,0.10);
-      backdrop-filter: blur(3px);
-      -webkit-backdrop-filter: blur(3px);
-      user-select: none;
-      -webkit-user-select: none;
-    }
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,0.25),
+    0 5px 15px rgba(0,0,0,0.2);
 
-    .key:active {
-      transform: scale(0.95);
-      background: rgba(255,255,255,0.28);
-    }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
-    .num {
-      font-size: 18px;
-      font-weight: 400;
-      line-height: 1;
-      margin-bottom: 4px;
-      pointer-events: none;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
-    }
+  cursor: pointer;
+}
 
-    .letters {
-      font-size: 9px;
-      font-weight: 600;
-      line-height: 1;
-      letter-spacing: 1.8px;
-      pointer-events: none;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
-    }
+.key:active {
+  transform: scale(0.95);
+}
 
-    .empty {
-      width: 72px;
-      height: 72px;
-    }
+/* 字母 */
+.letters {
+  font-size: 10px;
+  letter-spacing: 2px;
+}
 
-    .bottom-left,
-    .bottom-right {
-      position: absolute;
-      top: 560px;
-      color: rgba(255,255,255,0.95);
-      font-size: 16px;
-      font-weight: 400;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      z-index: 3;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
-    }
+/* 底部 */
+.bottom {
+  margin-top: 30px;
+  width: 260px;
+  display: flex;
+  justify-content: space-between;
+  color: white;
+}
 
-    .bottom-left {
-      left: 42px;
-    }
+button.text {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+}
 
-    .bottom-right {
-      right: 42px;
-    }
-
-    .message {
-      position: absolute;
-      top: 600px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 90%;
-      text-align: center;
-      min-height: 20px;
-      color: #ffbcbc;
-      font-size: 14px;
-      z-index: 3;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
-    }
-
-    .success-screen {
-      position: fixed;
-      inset: 0;
-      display: none;
-      justify-content: center;
-      align-items: center;
-      background: url("your-background.jpg") center center / cover no-repeat;
-      z-index: 9999;
-    }
-
-    .success-screen::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      background: rgba(255,255,255,0.18);
-    }
-
-    .success-text {
-      position: relative;
-      z-index: 2;
-      color: #fff;
-      font-size: 28px;
-      font-weight: 500;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.18);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
-    }
-
-    @media (max-width: 390px) {
-      .title { top: 112px; font-size: 16px; }
-      .dots { top: 168px; }
-      .keypad {
-        top: 225px;
-        width: 282px;
-        grid-template-columns: repeat(3, 68px);
-        grid-auto-rows: 68px;
-        row-gap: 22px;
-        column-gap: 22px;
-      }
-      .key, .empty {
-        width: 68px;
-        height: 68px;
-      }
-      .num { font-size: 17px; }
-      .letters { font-size: 8px; }
-      .bottom-left, .bottom-right {
-        top: 542px;
-        font-size: 15px;
-      }
-      .bottom-left { left: 34px; }
-      .bottom-right { right: 34px; }
-      .message { top: 580px; }
-    }
-  </style>
+/* 解锁 */
+.success {
+  position: fixed;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 30px;
+  z-index: 10;
+}
+</style>
 </head>
+
 <body>
-  <div class="screen">
-    <div class="phone">
-      <div class="title">Touch ID or Enter Passcode</div>
 
-      <div class="dots" id="dots">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-      </div>
+<div class="bg"></div>
+<div class="blur"></div>
 
-      <div class="keypad">
-        <button class="key" data-num="1" type="button">
-          <span class="num">1</span>
-        </button>
+<div class="container">
 
-        <button class="key" data-num="2" type="button">
-          <span class="num">2</span>
-          <span class="letters">ABC</span>
-        </button>
+  <div class="title">Touch ID or Enter Passcode</div>
 
-        <button class="key" data-num="3" type="button">
-          <span class="num">3</span>
-          <span class="letters">DEF</span>
-        </button>
-
-        <button class="key" data-num="4" type="button">
-          <span class="num">4</span>
-          <span class="letters">GHI</span>
-        </button>
-
-        <button class="key" data-num="5" type="button">
-          <span class="num">5</span>
-          <span class="letters">JKL</span>
-        </button>
-
-        <button class="key" data-num="6" type="button">
-          <span class="num">6</span>
-          <span class="letters">MNO</span>
-        </button>
-
-        <button class="key" data-num="7" type="button">
-          <span class="num">7</span>
-          <span class="letters">PQRS</span>
-        </button>
-
-        <button class="key" data-num="8" type="button">
-          <span class="num">8</span>
-          <span class="letters">TUV</span>
-        </button>
-
-        <button class="key" data-num="9" type="button">
-          <span class="num">9</span>
-          <span class="letters">WXYZ</span>
-        </button>
-
-        <div class="empty"></div>
-
-        <button class="key" data-num="0" type="button">
-          <span class="num">0</span>
-        </button>
-
-        <div class="empty"></div>
-      </div>
-
-      <button class="bottom-left" id="emergencyBtn" type="button">Emergency</button>
-      <button class="bottom-right" id="cancelBtn" type="button">Cancel</button>
-
-      <div class="message" id="message"></div>
-    </div>
+  <div class="dots" id="dots">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
   </div>
 
-  <div class="success-screen" id="successScreen">
-    <div class="success-text">Unlocked 💖</div>
+  <div class="keypad">
+    <button class="key" data="1">1</button>
+    <button class="key" data="2">2<div class="letters">ABC</div></button>
+    <button class="key" data="3">3<div class="letters">DEF</div></button>
+
+    <button class="key" data="4">4<div class="letters">GHI</div></button>
+    <button class="key" data="5">5<div class="letters">JKL</div></button>
+    <button class="key" data="6">6<div class="letters">MNO</div></button>
+
+    <button class="key" data="7">7<div class="letters">PQRS</div></button>
+    <button class="key" data="8">8<div class="letters">TUV</div></button>
+    <button class="key" data="9">9<div class="letters">WXYZ</div></button>
+
+    <div></div>
+    <button class="key" data="0">0</button>
+    <div></div>
   </div>
 
-  <audio id="clickSound" src="typing on phone sound effect.mp3" preload="auto"></audio>
-  <audio id="unlockSound" src="unlock.mp3" preload="auto"></audio>
+  <div class="bottom">
+    <button class="text" onclick="clearInput()">Emergency</button>
+    <button class="text" onclick="clearInput()">Cancel</button>
+  </div>
 
-  <script>
-    const correctPassword = "1229";
-    let input = "";
+</div>
 
-    const dots = document.querySelectorAll(".dot");
-    const keys = document.querySelectorAll(".key");
-    const message = document.getElementById("message");
-    const successScreen = document.getElementById("successScreen");
-    const clickSound = document.getElementById("clickSound");
-    const unlockSound = document.getElementById("unlockSound");
-    const cancelBtn = document.getElementById("cancelBtn");
-    const emergencyBtn = document.getElementById("emergencyBtn");
+<div class="success" id="success">Unlocked 💖</div>
 
-    function playSound(audio) {
-      if (!audio) return;
-      try {
-        audio.currentTime = 0;
-        audio.play();
-      } catch (e) {}
-    }
+<audio id="click" src="typing on phone sound effect.mp3"></audio>
+<audio id="unlock" src="unlock.mp3"></audio>
 
-    function updateDots() {
-      dots.forEach((dot, i) => {
-        if (i < input.length) {
-          dot.classList.add("filled");
-        } else {
-          dot.classList.remove("filled");
-        }
-      });
-    }
+<script>
+let input = "";
+const correct = "1229";
+const dots = document.querySelectorAll(".dot");
 
-    function clearInput() {
-      input = "";
-      updateDots();
-      message.textContent = "";
-    }
+function updateDots(){
+  dots.forEach((d,i)=>{
+    d.classList.toggle("filled", i < input.length);
+  });
+}
 
-    function checkPassword() {
-      if (input === correctPassword) {
-        playSound(unlockSound);
-        message.style.color = "#d6ffd6";
-        message.textContent = "Correct password";
-        setTimeout(() => {
-          successScreen.style.display = "flex";
-        }, 250);
-      } else {
-        message.style.color = "#ffbcbc";
-        message.textContent = "Wrong passcode";
-        setTimeout(() => {
-          clearInput();
-        }, 450);
-      }
-    }
+function press(num){
+  document.getElementById("click").play();
+  if(input.length < 4){
+    input += num;
+    updateDots();
+  }
+  if(input.length === 4){
+    setTimeout(check,200);
+  }
+}
 
-    function pressNumber(num) {
-      if (input.length >= 4) return;
-      playSound(clickSound);
-      input += num;
-      updateDots();
-      message.textContent = "";
+function check(){
+  if(input === correct){
+    document.getElementById("unlock").play();
+    document.getElementById("success").style.display="flex";
+  }else{
+    input="";
+    updateDots();
+  }
+}
 
-      if (input.length === 4) {
-        setTimeout(checkPassword, 120);
-      }
-    }
+function clearInput(){
+  input="";
+  updateDots();
+}
 
-    keys.forEach((key) => {
-      key.addEventListener("click", () => {
-        pressNumber(key.dataset.num);
-      });
-    });
+document.querySelectorAll(".key").forEach(btn=>{
+  btn.onclick=()=>press(btn.getAttribute("data"));
+});
+</script>
 
-    cancelBtn.addEventListener("click", clearInput);
-    emergencyBtn.addEventListener("click", clearInput);
-
-    document.addEventListener("keydown", (e) => {
-      if (/^[0-9]$/.test(e.key)) {
-        pressNumber(e.key);
-      }
-      if (e.key === "Backspace") {
-        input = input.slice(0, -1);
-        updateDots();
-      }
-    });
-  </script>
 </body>
 </html>
